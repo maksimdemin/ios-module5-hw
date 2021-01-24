@@ -1,6 +1,6 @@
 import UIKit
 
-//Home work Module 4
+//Home work Module 5
 //Created by Demin Maksim
 
 
@@ -268,13 +268,11 @@ extension Tree: Drawable, Immovable {
     }
 }
 
-class Wall {
+
+class Wall: Immovable, Drawable {
     func build() -> String {
         return "Wall was build"
     }
-}
-
-extension Wall: Immovable, Drawable {
     func notMove() -> String {
         return "Wall immobile object"
     }
@@ -282,6 +280,8 @@ extension Wall: Immovable, Drawable {
     func draw() -> String {
         return "Wall drawed"
     }
+    
+    
 }
 
 let map = Map()
@@ -318,10 +318,11 @@ class Auto {
     
     init(brand: String) {
         self.brand = brand
+        print(produce())
     }
     
     func produce() -> String {
-        return "This auto produce in a \(brand) factory"
+        return "\nThis auto produce in a \(brand) factory"
     }
 }
 
@@ -391,6 +392,7 @@ class Equipment {
     }
 }
 
+
 let toyotaCamry = ModelAuto(brand: "Toyota", nameModel: "Camry", typeBody: "Sedan", clearance: 9.0)
 
 let equipmentSimpleToyota = Equipment(modelAuto: toyotaCamry, typeEquipment: Equipment.TypeEquipment.simple, transmission: Equipment.TypeTransmission.MT, fuel: Equipment.TypeFuel.Diesel, volumeEngine: 2.0, salon: Equipment.TypeSalon.cloth, manHole: false, audioSystem: Equipment.Audio.basic)
@@ -456,4 +458,132 @@ equipmentSimpleToyota.aboutAuto()
 
 //let v4: D = D() - тут ошибок нет. В этом случае можно было написать иначе let v4 = D()
 //v4.a() - константа v4 имеет тип класса D. Класс D наследует класс С и поэтому контанте v4 доступны все функции классов D и C. Ошибок нет.
+
+
+
+
+//Additional task
+
+protocol MainFuncPhone {
+    func outgoingСall(number: Int) -> String
+    
+    func incomingCall(number: Int) -> String
+}
+
+//Abstract class
+class Phone: MainFuncPhone {
+    private let yearIssue: Int
+    private let brand: String
+    
+    init(yearIssue: Int, brand: String) {
+        self.yearIssue = yearIssue
+        self.brand = brand
+    }
+    
+    func aboutPhone() -> String {
+        return "\nThe phone was produced in \(yearIssue). \nBrand - \(brand)."
+    }
+    
+    func outgoingСall(number: Int) -> String {
+        return "outgoingcall to number: \(number)"
+    }
+    
+    func incomingCall(number: Int) -> String {
+        return "incomingcall from number: \(number)"
+    }
+}
+
+//Wired and Wireless phones
+
+class WiredPhone: Phone {
+    final let lineVoltage = 60
+    private let dialerType: String
+    
+    init(dialerType: String, yearIssue: Int, brand: String) {
+        self.dialerType = dialerType
+        super.init(yearIssue: yearIssue, brand: brand)
+    }
+    
+    override func aboutPhone() -> String {
+        return super.aboutPhone() + "\nSupply voltage = \(lineVoltage). \nDialer type - \(dialerType)"
+    }
+    
+    func connectToLine() -> String {
+        return "A telephone is connected to the wired line. The dialer type is \(dialerType). Supply voltage = \(lineVoltage) V"
+    }
+}
+
+
+
+class WirelessPhone: Phone {
+    private let volumeBattery: Int
+    
+    init(yearIssue: Int, brand: String, volumeBattery: Int) {
+        self.volumeBattery = volumeBattery
+        super.init(yearIssue: yearIssue, brand: brand)
+    }
+    
+    func checkVolBattery() -> Int {
+        return volumeBattery
+    }
+}
+
+//Smartphone
+
+class Smartphone: WirelessPhone {
+    var operationSystem: String
+
+    init(yearIssue: Int, brand: String, volumeBattery: Int, operationSystem: String) {
+        self.operationSystem = operationSystem
+        super.init(yearIssue: yearIssue, brand: brand, volumeBattery: volumeBattery)
+    }
+    
+    override func aboutPhone() -> String {
+        return super.aboutPhone() + "\nVolume battery = \(checkVolBattery()) mAh. \nOperation system - \(operationSystem)"
+    }
+}
+
+
+class User {
+    func readInfoAboutAnyPhone(phones: Phone...) {
+        for phone in phones {
+            print(phone.aboutPhone())
+        }
+    }
+    
+    func callToEmergency(phones: Phone...) {
+        for phone in phones {
+            print(phone.outgoingСall(number: 911))
+        }
+    }
+}
+
+
+//Создаем три телефона-объекта (экземпляра разных типов (классов)).
+let firstPhone = Phone(yearIssue: 1896, brand: "AT&T")
+let handlePhone = WiredPhone(dialerType: "Handle", yearIssue: 1968, brand: "ATS")
+let firsIphone = Smartphone(yearIssue: 2007, brand: "Apple", volumeBattery: 1400, operationSystem: "iOS")
+
+//Наследование - это иерархия сверху вниз, где вверху находятся (абстрактные классы) типы с общими свойствами и методами, которые унаследуются нижестоящими типами (классами). Например, если посмотреть ниже, то класс Smartphone имеет только свойство operationSystem и переопределенный метод aboutPhone. Все остальные свойства и методы достаются этому классу по наследсту от класса родителя Phone и протокола MainFuncPhone. Например в строке 571 мы видим как экземпляру доступен метод родительского класса outgoingCall.
+
+//Инкапсуляция - это обертка, через которую недоступны пользователю свойства или методы внутри класса. Это один из принципов ООП,где свойства и поведение объекта объединяются (обертываются) внутри класса, внутренняя пеализация скрывается от пользовател, а для работы с объектом предоставляется открытый интерфейс. Это реализовывается с помощью модификаторов доступа, таких как private (доступен только внутри класса), public (доступен вне модуля), final (невозможно переопределить или сделать какие либо изменения). В коде это представлено в строках: 499,500, 519 итд.
+
+//Полимор - возможность использовать разные объекты через один и тот же интерфейс (тип), при это каждый объект выполняет свою логику. В нашем случае мы через один метод прогоняем разные экземпляры, используя общий интерфейс. В коде строки:579, 580.
+
+handlePhone.connectToLine()
+firstPhone.outgoingСall(number: 89029999999)
+firsIphone.outgoingСall(number: 89999999999)
+firsIphone.checkVolBattery()
+
+let user = User()
+user.readInfoAboutAnyPhone(phones: firstPhone, handlePhone, firsIphone)
+user.callToEmergency(phones: handlePhone, firsIphone)
+
+
+
+
+
+
+
+
 
